@@ -20,7 +20,7 @@ def log(message):
 	today = date.today()
 	fileName = "{}/{}.log".format(config['log_dir'], today.strftime("%Y-%m-%d"))
 	with open(fileName, 'w+') as f:
-		f.write(formattedMessage)
+		f.writelines(formattedMessage)
 
 
 @bot.event
