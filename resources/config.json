@@ -1,0 +1,8 @@
+{
+    "prefix": ".",
+    "invite_link": "https://discordapp.com/api/oauth2/authorize?client_id=624244664584634381&permissions=8&scope=bot",
+    "iracing_url": "https://members.iracing.com",
+    "log_dir": "resources/logs",
+    "iracing_status_down": "iRacing is currently down for maintenance!",
+    "iracing_status_up": "iRacing is currently online!"
+}

@@ -1,3 +1,4 @@
+import os
 import asyncio
 import discord
 from discord.ext import commands
@@ -61,4 +62,5 @@ async def isdown(ctx):
 	r = requests.get(config['iracing_url'])
 	await bot.say(config["iracing_status_down"] if r.url.split('/')[3] == 'maintenance' else config["iracing_status_up"])
 
-bot.run(config['token'])
+
+bot.run(os.environ['TOKEN'])
