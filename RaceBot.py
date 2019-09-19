@@ -59,6 +59,6 @@ async def on_message(message):
 async def isdown(ctx):
 	print("noice")
 	r = requests.get(config['iracing_url'])
-	await bot.say("iRacing is currently down for maintenance!" if r.url.split('/')[3] == 'maintenance' else "iRacing should be online!")
+	await bot.say(config["iracing_status_down"] if r.url.split('/')[3] == 'maintenance' else config["iracing_status_up"])
 
 bot.run(config['token'])
