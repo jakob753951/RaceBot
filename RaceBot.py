@@ -29,7 +29,7 @@ def log(message):
 async def on_ready():
 	log('Connected!')
 	log('Username: ' + bot.user.name)
-	log('ID: ' + bot.user.id)
+	log('ID: ' + str(bot.user.id))
 	log('====================')
 
 @bot.event
