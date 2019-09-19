@@ -11,6 +11,8 @@ import requests
 #read token from config.json
 with open('resources/config.json', 'r') as configFile:
 	config = json.loads(configFile.read().replace('\n', ''))
+
+
 bot = commands.Bot(command_prefix=commands.when_mentioned_or(config['prefix']), description='A good alternative bot', pm_help=True)
 
 
