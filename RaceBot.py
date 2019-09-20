@@ -46,21 +46,20 @@ async def on_message_edit(before, after):
 
 @bot.event
 async def on_message(message):
-	#if the author is not the bot
-	if message.author != bot.user:
-		#Log message
-		#if message is a DM
-		if(message.channel.is_private):
-			log("Direct message>" + str(message.author) + ": \"" + message.content + "\"")
-		#if message is in server
-		else:
-			log(str(message.server) + ">" + str(message.channel) + ">" + str(message.author) + ": \"" + message.content + "\"")
+	#if message.author != bot.user:
+	
+	#Log message
+	#if message is a DM
+	if(message.channel.is_private):
+		log("Direct message>" + str(message.author) + ": \"" + message.content + "\"")
+	#if message is in server
+	else:
+		log(str(message.server) + ">" + str(message.channel) + ">" + str(message.author) + ": \"" + message.content + "\"")
 
 	await bot.process_commands(message)
 
 @bot.command(pass_context=True)
 async def isdown(ctx):
-	print("noice")
 	r = requests.get(config['iracing_url'])
 	await bot.say(config["iracing_status_down"] if r.url.split('/')[3] == 'maintenance' else config["iracing_status_up"])
 

@@ -1,2 +1,3 @@
 resources/logs/
 .vscode/settings.json
+**.DS_Store
