@@ -7,6 +7,7 @@ from datetime import date
 import random
 import json
 import requests
+import codecs
 
 
 #read token from config.json
@@ -24,12 +25,12 @@ def log(message):
 	if not os.path.isdir(config['log_dir']):
 		os.mkdir(config['log_dir'])
 	fileName = "{}/{}.log".format(config['log_dir'], today.strftime("%Y-%m-%d"))
-	with open(fileName, 'a+') as f:
+	with codecs.open(fileName, 'a+', 'utf-8') as f:
 		f.write(formattedMessage + "\n")
 
-def is_me():
+def is_owner():
     def predicate(ctx):
-        return ctx.message.author.id == 85309593344815104
+        return ctx.message.author.id == 143784050815926272
     return commands.check(predicate)
 
 @bot.event
