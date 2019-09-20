@@ -14,7 +14,7 @@ with open('resources/config.json', 'r') as configFile:
 	config = json.loads(configFile.read().replace('\n', ''))
 
 
-bot = commands.Bot(command_prefix=commands.when_mentioned_or(config['prefix']), description='A good alternative bot', pm_help=True)
+bot = commands.Bot(command_prefix=commands.when_mentioned_or(config['bot_prefix']), description=config['bot_description'], pm_help=True)
 
 
 def log(message):
@@ -46,20 +46,17 @@ async def on_message_edit(before, after):
 
 @bot.event
 async def on_message(message):
-	#if message.author != bot.user:
-	
-	#Log message
-	#if message is a DM
 	if(message.channel.is_private):
 		log("Direct message>" + str(message.author) + ": \"" + message.content + "\"")
-	#if message is in server
 	else:
 		log(str(message.server) + ">" + str(message.channel) + ">" + str(message.author) + ": \"" + message.content + "\"")
-
+	
+	#allow the bot to process the message as a command
 	await bot.process_commands(message)
 
-@bot.command(pass_context=True)
+@bot.command(pass_context=True, brief="Checks if iRacing is down for maintenance")
 async def isdown(ctx):
+	"Sends a request to iRacing, and if it's redirected to the maintenance page, we know it's down"
 	r = requests.get(config['iracing_url'])
 	await bot.say(config["iracing_status_down"] if r.url.split('/')[3] == 'maintenance' else config["iracing_status_up"])
 

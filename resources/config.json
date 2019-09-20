@@ -1,5 +1,6 @@
 {
-    "prefix": ".",
+    "bot_prefix": ".",
+    "bot_description": "Bot used for iRacing purposes",
     "invite_link": "https://discordapp.com/api/oauth2/authorize?client_id=624244664584634381&permissions=8&scope=bot",
     "iracing_url": "https://members.iracing.com",
     "log_dir": "resources/logs",
