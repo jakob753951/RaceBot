@@ -8,7 +8,7 @@
             "name": "RaceBot",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}\\RaceBot.py",
+            "program": "${workspaceFolder}/RaceBot.py",
             "console": "integratedTerminal"
         }
     ]
