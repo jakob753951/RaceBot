@@ -6,6 +6,7 @@ certifi==2019.9.11
 chardet==3.0.4
 discord.py==1.2.3
 idna==2.8
+idna-ssl==1.1.0
 isort==4.3.21
 lazy-object-proxy==1.4.2
 mccabe==0.6.1
@@ -14,6 +15,7 @@ pylint==2.3.1
 requests==2.22.0
 six==1.12.0
 typed-ast==1.4.0
+typing-extensions==3.7.4
 urllib3==1.25.5
 websockets==6.0
 wrapt==1.11.2
