@@ -21,6 +21,8 @@ def log(message):
 	formattedMessage = str(datetime.now())[:-7] + ":  " + message
 	print(formattedMessage, flush=True)
 	today = date.today()
+	if not os.path.isdir(config['log_dir']):
+		os.mkdir(config['log_dir'])
 	fileName = "{}/{}.log".format(config['log_dir'], today.strftime("%Y-%m-%d"))
 	with open(fileName, 'a+') as f:
 		f.write(formattedMessage + "\n")
