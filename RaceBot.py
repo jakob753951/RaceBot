@@ -56,9 +56,23 @@ async def on_message(message):
 
 @bot.command(pass_context=True, brief="Checks if iRacing is down for maintenance")
 async def isdown(ctx):
-	"Sends a request to iRacing, and if it's redirected to the maintenance page, we know it's down"
+	"""
+	Sends a request to iRacing, and if it's redirected to the maintenance page, we know it's down
+
+	Usage: .isdown
+	"""
 	r = requests.get(config['iracing_url'])
 	await bot.say(config["iracing_status_down"] if r.url.split('/')[3] == 'maintenance' else config["iracing_status_up"])
+
+@bot.command()
+@commands.has_role("Dev")
+async def shutdown(brief="Shuts the bot down"):
+	"""
+	Shuts the bot down
+	Requires "Dev" role
+	Usage: .shutdown
+	"""
+	await bot.logout()
 
 
 bot.run(os.environ['TOKEN'])
