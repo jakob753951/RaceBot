@@ -1,13 +1,17 @@
 import os
+import codecs
+import json
+import random
 import asyncio
-import discord
-from discord.ext import commands
+import time
 from datetime import datetime
 from datetime import date
-import random
-import json
+
+import discord
+from discord.ext import commands
+from discord.utils import get
+
 import requests
-import codecs
 
 
 #read token from config.json
@@ -69,10 +73,33 @@ async def isdown(ctx):
 	"""
 	Sends a request to iRacing, and if it's redirected to the maintenance page, we know it's down
 
-	Usage: .isdown
+	Usage:
+	.isdown
 	"""
 	r = requests.get(config['iracing_url'])
-	await ctx.send(config["iracing_status_down"] if r.url.split('/')[3] == 'maintenance' else config["iracing_status_up"])
+	await ctx.send(config["isdown_down"] if r.url.split('/')[3] == 'maintenance' else config["isdown_up"])
+	
+@bot.command(pass_context=True, brief="Mentions the user when iRacing is back online")
+async def mentionwhenup(ctx, user = config["owner_id"]):
+	"""
+	Mentions the user when iRacing is back online
+	You can specify which user to mention, if you are a dev
+
+	Usage:
+	.mentionwhenup
+	.mentionwhenup [User]
+	"""
+	if not is_owner():
+		user = ctx.message.author
+	else:
+		user = get(bot.get_all_members(), id=user)
+
+	while True:
+		r = requests.get(config['iracing_url'])
+		if r.url.split('/')[3] != 'maintenance':
+			break
+		time.sleep(config["mentionwhenup_interval"])
+	await ctx.send(config["mentionwhenup_message"].format(user.mention))
 
 @bot.command()
 @commands.has_role("Dev")
