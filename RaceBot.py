@@ -30,7 +30,12 @@ def log(message):
 
 def is_owner():
     def predicate(ctx):
-        return ctx.message.author.id == 143784050815926272
+        return ctx.message.author.id == config["owner_id"]
+    return commands.check(predicate)
+
+def is_bot_channel():
+    def predicate(ctx):
+        return ctx.message.channel.id == config["bot_channel_id"]
     return commands.check(predicate)
 
 @bot.event
