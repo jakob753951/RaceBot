@@ -53,10 +53,10 @@ async def on_ready():
 async def on_message_edit(before, after):
 	#if message is a DM
     if(isinstance(after.channel, discord.abc.PrivateChannel)):
-        log("""Direct message>{}: "{}" --> "{}" """.format(str(after.author), before.content, after.content))
+        log("""Direct message>{}: "{}" --> "{}\"""".format(str(after.author), before.content, after.content))
 	#if message is in server
     else:
-        log("""{}>{}>{}: "{}" --> "{}" """.format(str(after.guild), str(after.channel), str(after.author), before.content, after.content))
+        log("""{}>{}>{}: "{}" --> "{}\"""".format(str(after.guild), str(after.channel), str(after.author), before.content, after.content))
 
 @bot.event
 async def on_message(message):
@@ -68,6 +68,7 @@ async def on_message(message):
 	#allow the bot to process the message as a command
 	await bot.process_commands(message)
 
+@is_bot_channel()
 @bot.command(pass_context=True, brief="Checks if iRacing is down for maintenance")
 async def isdown(ctx):
 	"""
@@ -78,7 +79,8 @@ async def isdown(ctx):
 	"""
 	r = requests.get(config['iracing_url'])
 	await ctx.send(config["isdown_down"] if r.url.split('/')[3] == 'maintenance' else config["isdown_up"])
-	
+
+@is_bot_channel()
 @bot.command(pass_context=True, brief="Mentions the user when iRacing is back online")
 async def mentionwhenup(ctx, user = config["owner_id"]):
 	"""
@@ -101,9 +103,9 @@ async def mentionwhenup(ctx, user = config["owner_id"]):
 		time.sleep(config["mentionwhenup_interval"])
 	await ctx.send(config["mentionwhenup_message"].format(user.mention))
 
-@bot.command()
-@commands.has_role("Dev")
-async def shutdown(brief="Shuts the bot down"):
+@is_owner()
+@bot.command(pass_context=True, brief="Shuts the bot down")
+async def shutdown(ctx):
 	"""
 	Shuts the bot down
 	Requires "Dev" role
