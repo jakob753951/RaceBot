@@ -88,7 +88,6 @@ async def on_message(message):
 				newRoles.append(hasName)
 				await message.author.edit(roles=newRoles)
 				
-
 	#allow the bot to process the message as a command
 	await bot.process_commands(message)
 
