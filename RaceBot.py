@@ -1,6 +1,7 @@
 import os
 import codecs
 import json
+import re
 import random
 import asyncio
 import time
@@ -37,9 +38,19 @@ def is_owner():
         return ctx.message.author.id == config["owner_id"]
     return commands.check(predicate)
 
+def is_dev():
+    def predicate(ctx):
+        return ctx.message.guild.get_role(config["dev_role"]) in ctx.message.author.roles
+    return commands.check(predicate)
+
 def is_bot_channel():
     def predicate(ctx):
         return ctx.message.channel.id == config["bot_channel_id"]
+    return commands.check(predicate)
+
+def has_name():
+    def predicate(ctx):
+        return ctx.message.guild.get_role(config["has_name_role"]) in ctx.message.author.roles
     return commands.check(predicate)
 
 @bot.event
@@ -52,7 +63,7 @@ async def on_ready():
 @bot.event
 async def on_message_edit(before, after):
 	#if message is a DM
-    if(isinstance(after.channel, discord.abc.PrivateChannel)):
+    if isinstance(after.channel, discord.abc.PrivateChannel):
         log("""Direct message>{}: "{}" --> "{}\"""".format(str(after.author), before.content, after.content))
 	#if message is in server
     else:
@@ -60,11 +71,24 @@ async def on_message_edit(before, after):
 
 @bot.event
 async def on_message(message):
-	if(isinstance(message.channel, discord.abc.PrivateChannel)):
+	#Log the message
+	if isinstance(message.channel, discord.abc.PrivateChannel):
 		log("Direct message>" + str(message.author) + ": \"" + message.content + "\"")
 	else:
 		log(str(message.guild) + ">" + str(message.channel) + ">" + str(message.author) + ": \"" + message.content + "\"")
 	
+	if message.channel == get(bot.get_all_channels(), id=config["intro_channel_id"]):
+		match = re.findall(r'(?<=Name:).*', message.content, re.IGNORECASE)[0].strip()
+		if match != None:
+			await message.author.edit(nick=match)
+
+			hasName = message.guild.get_role(config["has_name_role"])
+			newRoles = message.author.roles
+			if hasName not in newRoles:
+				newRoles.append(hasName)
+				await message.author.edit(roles=newRoles)
+				
+
 	#allow the bot to process the message as a command
 	await bot.process_commands(message)
 
