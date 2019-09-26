@@ -7,13 +7,11 @@ import asyncio
 import time
 from datetime import datetime
 from datetime import date
-
 import discord
 from discord.ext import commands
 from discord.utils import get
-
 import requests
-
+from selenium import webdriver
 
 #read token from config.json
 with open('resources/config.json', 'r') as configFile:
@@ -125,6 +123,58 @@ async def mentionwhenup(ctx, user = config["owner_id"]):
 			break
 		time.sleep(config["mentionwhenup_interval"])
 	await ctx.send(config["mentionwhenup_message"].format(user.mention))
+
+@is_bot_channel()
+@bot.command(pass_context=True, brief="Get licenses for the user")
+async def getlicense(ctx, id):
+	"""
+	Gets the licenses for a specific user
+
+	Usage:
+	.licenses [UserId]
+	"""
+
+	msg = await ctx.send("`Fetching data...`")
+
+	if id is None:
+		await ctx.send("Must specify user")
+	
+
+	options = webdriver.ChromeOptions()
+	options.add_argument("--no-sandbox")
+	options.add_argument("--disable-dev-shm-usage")
+	options.add_argument('--headless')
+
+	browser = webdriver.Chrome(chrome_options=options)
+
+	baseUrl = "https://members.iracing.com/membersite/member/CareerStats.do?custid="
+	fullUrl = baseUrl + str(id)
+
+	browser.get(fullUrl)
+	browser.find_element_by_class_name("username").send_keys("jlm1999@live.dk")
+	browser.find_element_by_class_name("password").send_keys("753951alicia")
+	browser.find_element_by_id("submit").click()
+
+	if browser.current_url != fullUrl:
+		browser.get(fullUrl)
+
+	licenses = []
+	licenseNames = ["oval", "road", "dirtOval", "dirtRoad"]
+
+	username = browser.find_element_by_xpath("//*[@id=\"image_area\"]/div[1]")
+
+	for licenseName in licenseNames:
+		browser.execute_script("arguments[0].click();", browser.find_element_by_id(licenseName + "Tab"))
+		licenses.append(browser.find_element_by_xpath("//*[@id=\"" + licenseName + "TabContent\"]/div[1]/div/div[2]/div[1]").text)
+
+	finalText = "```licenses for {}:\n".format(username.text)
+	for i in licenses:
+		finalText += i + "\n"
+	finalText += "```"
+	
+	browser.close()
+
+	await msg.edit(content=finalText)
 
 @is_owner()
 @bot.command(pass_context=True, brief="Shuts the bot down")
