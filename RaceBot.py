@@ -158,19 +158,26 @@ async def getlicense(ctx, id):
 	if browser.current_url != fullUrl:
 		browser.get(fullUrl)
 
-	licenses = []
+	safetyRatings = []
+	iRatings = []
+
 	licenseNames = ["oval", "road", "dirtOval", "dirtRoad"]
 
 	username = browser.find_element_by_xpath("//*[@id=\"image_area\"]/div[1]")
 
 	for licenseName in licenseNames:
 		browser.execute_script("arguments[0].click();", browser.find_element_by_id(licenseName + "Tab"))
-		licenses.append(browser.find_element_by_xpath("//*[@id=\"" + licenseName + "TabContent\"]/div[1]/div/div[2]/div[1]").text)
+		safetyRatings.append(browser.find_element_by_xpath("//*[@id=\"" + licenseName + "TabContent\"]/div[1]/div/div[2]/div[1]").text)
+		iRatings.append(browser.find_element_by_xpath("//*[@id=\"" + licenseName + "TabContent\"]/div[1]/div/div[2]/div[3]").text)
 
 	finalText = "```licenses for {}:\n".format(username.text)
-	for i in licenses:
-		finalText += i + "\n"
+	for i in range(len(licenseNames)):
+		finalText += licenseNames[i].capitalize() + ":\n\t"
+		finalText += safetyRatings[i] + "\n\t"
+		finalText += iRatings[i] + "\n\n"
 	finalText += "```"
+
+	print(finalText)
 	
 	browser.close()
 
