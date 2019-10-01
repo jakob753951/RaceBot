@@ -134,47 +134,50 @@ async def getlicense(ctx, id):
 	.licenses [UserId]
 	"""
 
-	msg = await ctx.send("`Fetching data...`")
-
 	if id is None:
 		await ctx.send("Must specify user")
+		return
 	
+	msg = await ctx.send("`Fetching data...`")
 
-	options = webdriver.ChromeOptions()
-	options.add_argument("--no-sandbox")
-	options.add_argument("--disable-dev-shm-usage")
-	options.add_argument('--headless')
+	try:
+		options = webdriver.ChromeOptions()
+		options.add_argument("--no-sandbox")
+		options.add_argument("--disable-dev-shm-usage")
+		options.add_argument('--headless')
 
-	browser = webdriver.Chrome(chrome_options=options)
+		browser = webdriver.Chrome(chrome_options=options)
 
-	baseUrl = "https://members.iracing.com/membersite/member/CareerStats.do?custid="
-	fullUrl = baseUrl + str(id)
+		baseUrl = "https://members.iracing.com/membersite/member/CareerStats.do?custid="
+		fullUrl = baseUrl + str(id)
 
-	browser.get(fullUrl)
-	browser.find_element_by_class_name("username").send_keys("jlm1999@live.dk")
-	browser.find_element_by_class_name("password").send_keys("753951alicia")
-	browser.find_element_by_id("submit").click()
-
-	if browser.current_url != fullUrl:
 		browser.get(fullUrl)
+		browser.find_element_by_class_name("username").send_keys("jlm1999@live.dk")
+		browser.find_element_by_class_name("password").send_keys("753951alicia")
+		browser.find_element_by_id("submit").click()
 
-	licenses = []
-	licenseNames = ["oval", "road", "dirtOval", "dirtRoad"]
+		if browser.current_url != fullUrl:
+			browser.get(fullUrl)
 
-	username = browser.find_element_by_xpath("//*[@id=\"image_area\"]/div[1]")
+		licenses = []
+		licenseNames = ["oval", "road", "dirtOval", "dirtRoad"]
 
-	for licenseName in licenseNames:
-		browser.execute_script("arguments[0].click();", browser.find_element_by_id(licenseName + "Tab"))
-		licenses.append(browser.find_element_by_xpath("//*[@id=\"" + licenseName + "TabContent\"]/div[1]/div/div[2]/div[1]").text)
+		username = browser.find_element_by_xpath("//*[@id=\"image_area\"]/div[1]")
 
-	finalText = "```licenses for {}:\n".format(username.text)
-	for i in licenses:
-		finalText += i + "\n"
-	finalText += "```"
-	
-	browser.close()
+		for licenseName in licenseNames:
+			browser.execute_script("arguments[0].click();", browser.find_element_by_id(licenseName + "Tab"))
+			licenses.append(browser.find_element_by_xpath("//*[@id=\"" + licenseName + "TabContent\"]/div[1]/div/div[2]/div[1]").text)
 
-	await msg.edit(content=finalText)
+		finalText = "```licenses for {}:\n".format(username.text)
+		for i in licenses:
+			finalText += i + "\n"
+		finalText += "```"
+		
+		browser.close()
+
+		await msg.edit(content=finalText)
+	except:
+		await msg.edit(content="Could not get data for user {}".format(id))
 
 @is_owner()
 @bot.command(pass_context=True, brief="Shuts the bot down")
