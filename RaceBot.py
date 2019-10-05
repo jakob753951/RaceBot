@@ -12,6 +12,7 @@ from discord.ext import commands
 from discord.utils import get
 import requests
 from selenium import webdriver
+import db
 
 #read token from config.json
 with open('resources/config.json', 'r') as configFile:
@@ -126,7 +127,7 @@ async def mentionwhenup(ctx, user = config["owner_id"]):
 
 @is_bot_channel()
 @bot.command(pass_context=True, brief="Get licenses for the user")
-async def getlicense(ctx, id):
+async def licenses(ctx, id = None):
 	"""
 	Gets the licenses for a specific user
 
@@ -136,8 +137,10 @@ async def getlicense(ctx, id):
 
 	msg = await ctx.send("`Fetching data...`")
 
+	if str(id).startswith("<@"):
+		id = db.getCustFromDiscord(str(id)[2:-1])
 	if id is None:
-		await ctx.send("Must specify user")
+		id = db.getCustFromDiscord(ctx.author.id)
 	
 
 	options = webdriver.ChromeOptions()
@@ -192,6 +195,18 @@ async def shutdown(ctx):
 	Usage: .shutdown
 	"""
 	await bot.logout()
+
+@bot.command(pass_context=True, brief="Shuts the bot down")
+async def createuser(ctx, custid, discordId = -1):
+	if discordId is -1:
+		discordId = ctx.author.id
+	
+	altered = db.createUser(discordId, custid)
+
+	if altered is 0:
+		await ctx.send("User not created. that Customer ID, or Discord user has already been assigned")
+	else:
+		await ctx.send("User successfully created!")
 	
 
 bot.run(os.environ['TOKEN'])
