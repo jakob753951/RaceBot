@@ -11,8 +11,8 @@ import discord
 from discord.ext import commands
 from discord.utils import get
 import requests
-from selenium import webdriver
 import db
+import scrape
 
 #read token from config.json
 with open('resources/config.json', 'r') as configFile:
@@ -137,55 +137,26 @@ async def licenses(ctx, id = None):
 
 	msg = await ctx.send("`Fetching data...`")
 
-	if str(id).startswith("<@"):
-		id = db.getCustFromDiscord(str(id)[2:-1])
-		if id is None:
-			await msg.edit(content="`No id set for this user`")
-			return
 	if id is None:
 		id = db.getCustFromDiscord(ctx.author.id)
 
+	if str(id).startswith("<@"):
+		id = db.getCustFromDiscord(int(str(id)[2:-1]))
+		if id is None:
+			await msg.edit(content="`No id set for this user`")
+			return
+
+	licenseNames = ["Oval", "Road", "Dirt Oval", "Dirt Road"]
+
+	licenses = scrape.getLicenses(id)
+	username = licenses["username"]
 	try:
-		options = webdriver.ChromeOptions()
-		options.add_argument("--no-sandbox")
-		options.add_argument("--disable-dev-shm-usage")
-		options.add_argument('--headless')
-
-		browser = webdriver.Chrome(chrome_options=options)
-
-		baseUrl = "https://members.iracing.com/membersite/member/CareerStats.do?custid="
-		fullUrl = baseUrl + str(id)
-
-		browser.get(fullUrl)
-		browser.find_element_by_class_name("username").send_keys("jlm1999@live.dk")
-		browser.find_element_by_class_name("password").send_keys("753951alicia")
-		browser.find_element_by_id("submit").click()
-
-
-		licenseNames = ["oval", "road", "dirtOval", "dirtRoad"]
-
-		if browser.current_url != fullUrl:
-			browser.get(fullUrl)
-
-		safetyRatings = []
-		iRatings = []
-		licenseNames = ["oval", "road", "dirtOval", "dirtRoad"]
-
-		username = browser.find_element_by_xpath("//*[@id=\"image_area\"]/div[1]")
-
-		for licenseName in licenseNames:
-			browser.execute_script("arguments[0].click();", browser.find_element_by_id(licenseName + "Tab"))
-			safetyRatings.append(browser.find_element_by_xpath("//*[@id=\"" + licenseName + "TabContent\"]/div[1]/div/div[2]/div[1]").text)
-			iRatings.append(browser.find_element_by_xpath("//*[@id=\"" + licenseName + "TabContent\"]/div[1]/div/div[2]/div[3]").text)
-
-		finalText = "```licenses for {}:\n".format(username.text)
+		finalText = f"```licenses for {username}:\n"
 		for i in range(len(licenseNames)):
-			finalText += licenseNames[i].capitalize() + ":\n\t"
-			finalText += safetyRatings[i] + "\n\t"
-			finalText += iRatings[i] + "\n\n"
+			finalText += licenseNames[i] + ":\n\t"
+			finalText += licenses["safetyRatings"][i] + "\n\t"
+			finalText += licenses["iRatings"][i] + "\n\n"
 		finalText += "```"
-		
-		browser.close()
 
 		await msg.edit(content=finalText)
 	except:
