@@ -139,10 +139,11 @@ async def licenses(ctx, id = None):
 
 	if str(id).startswith("<@"):
 		id = db.getCustFromDiscord(str(id)[2:-1])
+		if id is None:
+			await msg.edit(content="`No id set for this user`")
+			return
 	if id is None:
 		id = db.getCustFromDiscord(ctx.author.id)
-	
-	msg = await ctx.send("`Fetching data...`")
 
 	try:
 		options = webdriver.ChromeOptions()
@@ -170,6 +171,8 @@ async def licenses(ctx, id = None):
 		iRatings = []
 		licenseNames = ["oval", "road", "dirtOval", "dirtRoad"]
 
+		username = browser.find_element_by_xpath("//*[@id=\"image_area\"]/div[1]")
+
 		for licenseName in licenseNames:
 			browser.execute_script("arguments[0].click();", browser.find_element_by_id(licenseName + "Tab"))
 			safetyRatings.append(browser.find_element_by_xpath("//*[@id=\"" + licenseName + "TabContent\"]/div[1]/div/div[2]/div[1]").text)
@@ -188,16 +191,6 @@ async def licenses(ctx, id = None):
 	except:
 		await msg.edit(content="Could not get data for user {}".format(id))
 
-@is_owner()
-@bot.command(pass_context=True, brief="Shuts the bot down")
-async def shutdown(ctx):
-	"""
-	Shuts the bot down
-	Requires "Dev" role
-	Usage: .shutdown
-	"""
-	await bot.logout()
-
 @bot.command(pass_context=True, brief="Shuts the bot down")
 async def createuser(ctx, custid, discordId = -1):
 	if discordId is -1:
@@ -209,6 +202,15 @@ async def createuser(ctx, custid, discordId = -1):
 		await ctx.send("User not created. that Customer ID, or Discord user has already been assigned")
 	else:
 		await ctx.send("User successfully created!")
-	
+
+@is_owner()
+@bot.command(pass_context=True, brief="Shuts the bot down")
+async def shutdown(ctx):
+	"""
+	Shuts the bot down
+	Requires "Dev" role
+	Usage: .shutdown
+	"""
+	await bot.logout()
 
 bot.run(os.environ['TOKEN'])
