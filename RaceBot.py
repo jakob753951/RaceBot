@@ -140,6 +140,7 @@ async def licenses(ctx, id = None):
 	if id is None:
 		id = db.getCustFromDiscord(ctx.author.id)
 
+	id = str(id).replace('!', '')
 	if str(id).startswith("<@"):
 		id = db.getCustFromDiscord(int(str(id)[2:-1]))
 		if id is None:
@@ -163,9 +164,12 @@ async def licenses(ctx, id = None):
 		await msg.edit(content="Could not get data for user {}".format(id))
 
 @bot.command(pass_context=True, brief="Shuts the bot down")
-async def createuser(ctx, custid, discordId = -1):
-	if discordId is -1:
+async def createuser(ctx, custid, discordId = None):
+
+	if discordId is None:
 		discordId = ctx.author.id
+		
+	discordId = discordId.translate({ord(i): None for i in '<@!>'})
 	
 	altered = db.createUser(discordId, custid)
 
