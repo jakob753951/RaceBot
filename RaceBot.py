@@ -28,7 +28,7 @@ def log(message):
 	today = date.today()
 	if not os.path.isdir(config['log_dir']):
 		os.mkdir(config['log_dir'])
-	fileName = "{}/{}.log".format(config['log_dir'], today.strftime("%Y-%m-%d"))
+	fileName = f"{config['log_dir']}/{today.strftime('%Y-%m-%d')}.log"
 	with codecs.open(fileName, 'a+', 'utf-8') as f:
 		f.write(formattedMessage + "\n")
 
@@ -63,10 +63,10 @@ async def on_ready():
 async def on_message_edit(before, after):
 	#if message is a DM
     if isinstance(after.channel, discord.abc.PrivateChannel):
-        log("""Direct message>{}: "{}" --> "{}\"""".format(str(after.author), before.content, after.content))
+        log(f"""Direct message>{str(after.author)}: "{before.content}" --> "{after.content}\"""")
 	#if message is in server
     else:
-        log("""{}>{}>{}: "{}" --> "{}\"""".format(str(after.guild), str(after.channel), str(after.author), before.content, after.content))
+        log(f"""{str(after.guild)}>{str(after.channel)}>{str(after.author)}: "{before.content}" --> "{after.content}\"""")
 
 @bot.event
 async def on_message(message):
@@ -136,16 +136,18 @@ async def licenses(ctx, id = None):
 	"""
 
 	msg = await ctx.send("`Fetching data...`")
-
+	
+	id = str(id).replace('!', '')
+	
 	if id is None:
 		id = db.getCustFromDiscord(ctx.author.id)
 
-	id = str(id).replace('!', '')
 	if str(id).startswith("<@"):
 		id = db.getCustFromDiscord(int(str(id)[2:-1]))
-		if id is None:
-			await msg.edit(content="`No id set for this user`")
-			return
+
+	if id is None:
+		await msg.edit(content="`No id set for this user`")
+		return
 
 	licenseNames = ["Oval", "Road", "Dirt Oval", "Dirt Road"]
 
@@ -161,7 +163,7 @@ async def licenses(ctx, id = None):
 
 		await msg.edit(content=finalText)
 	except:
-		await msg.edit(content="Could not get data for user {}".format(id))
+		await msg.edit(content=f"Could not get data for user {id}")
 
 @bot.command(pass_context=True, brief="Shuts the bot down")
 async def createuser(ctx, custid, discordId = None):
