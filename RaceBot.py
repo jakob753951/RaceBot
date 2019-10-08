@@ -137,13 +137,12 @@ async def licenses(ctx, id = None):
 
 	msg = await ctx.send("`Fetching data...`")
 	
-	id = str(id).replace('!', '')
 	
 	if id is None:
 		id = db.getCustFromDiscord(ctx.author.id)
 
-	if str(id).startswith("<@"):
-		id = db.getCustFromDiscord(int(str(id)[2:-1]))
+	if str(id).replace('!', '').startswith("<@"):
+		id = db.getCustFromDiscord(int(str(id).replace('!', '')[2:-1]))
 
 	if id is None:
 		await msg.edit(content="`No id set for this user`")
@@ -170,8 +169,9 @@ async def createuser(ctx, custid, discordId = None):
 
 	if discordId is None:
 		discordId = ctx.author.id
-		
-	discordId = discordId.translate({ord(i): None for i in '<@!>'})
+	
+	if isinstance(discord, str):
+		discordId = int(discordId.translate({ord(i): None for i in '<@!>'}))
 	
 	altered = db.createUser(discordId, custid)
 
