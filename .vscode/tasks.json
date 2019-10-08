@@ -6,12 +6,13 @@
         {
             "label": "Setup",
             "type": "shell",
-            "command": "./scripts/setup.sh",
+            "command": "source /root/RaceBot/scripts/setup.sh",
             "group": "build",
             "presentation": {
-              "reveal": "always",
-              "panel": "new"
-            }
-          }
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        }
     ]
 }
