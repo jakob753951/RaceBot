@@ -12,5 +12,6 @@
     "isdown_down": "iRacing is currently down for maintenance!",
     "isdown_up": "iRacing is currently online!",
     "mentionwhenup_message": "{} iRacing is back online!",
-    "mentionwhenup_interval": 10
+    "mentionwhenup_interval": 10,
+    "schedule": "https://docs.google.com/spreadsheets/d/1VoOvsitrMyTwXWEn8pdPzJGtbIA3Sxl6uGFh8bRF4Pc/htmlview"
 }

@@ -126,6 +126,17 @@ async def mentionwhenup(ctx, user = config["owner_id"]):
 	await ctx.send(config["mentionwhenup_message"].format(user.mention))
 
 @is_bot_channel()
+@bot.command(pass_context=True, brief="")
+async def schedule(ctx):
+	"""
+	Posts a link to the scheduled tracks for all the series
+
+	Usage:
+	.schedule
+	"""
+	await ctx.send(config['schedule'])
+
+@is_bot_channel()
 @bot.command(pass_context=True, brief="Get licenses for the user")
 async def licenses(ctx, id = None):
 	"""
